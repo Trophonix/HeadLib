@@ -465,9 +465,13 @@ public enum HeadLib {
 
         String getTextureValue(ItemStack itemStack);
 
+        UUID getSkullOwner(ItemStack itemStack);
+
         ItemStack setSkullOwner(ItemStack itemStack, Object compound);
 
         Object createOwnerCompound(String id, String textureValue);
+
+        Object getOwnerCompound(ItemStack item);
 
     }
 
@@ -481,6 +485,16 @@ public enum HeadLib {
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | ClassCastException exception) {
             Bukkit.getLogger().log(Level.SEVERE, "HeadLib could not find a valid implementation for " + internalsName + ".");
         }
+    }
+
+    /**
+     * Returns the owning UUID of an ItemStack if the ItemStack has one, or null if it does not
+     *
+     * @param item a Bukkit ItemStack, must be a head
+     * @return the owning UUID of an ItemStack if the ItemStack has one, or null if it does not
+     */
+    public static UUID getSkullOwner(ItemStack item) {
+        return internals.getSkullOwner(item);
     }
 
     /**

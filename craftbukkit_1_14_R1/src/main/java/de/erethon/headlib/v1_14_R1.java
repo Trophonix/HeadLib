@@ -19,6 +19,8 @@ import net.minecraft.server.v1_14_R1.NBTTagList;
 import org.bukkit.craftbukkit.v1_14_R1.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.UUID;
+
 /**
  * @author Daniel Saukel
  */
@@ -26,14 +28,7 @@ class v1_14_R1 implements InternalsProvider {
 
     @Override
     public String getTextureValue(ItemStack item) {
-        net.minecraft.server.v1_14_R1.ItemStack nmsStack = CraftItemStack.asNMSCopy(item);
-
-        NBTTagCompound tag = nmsStack.getTag();
-        if (tag == null) {
-            return null;
-        }
-
-        NBTTagCompound skullOwner = tag.getCompound("SkullOwner");
+        NBTTagCompound skullOwner = (NBTTagCompound) getOwnerCompound(item);
         if (skullOwner == null) {
             return null;
         }
@@ -61,6 +56,18 @@ class v1_14_R1 implements InternalsProvider {
         return CraftItemStack.asBukkitCopy(nmsStack);
     }
 
+    @Override public UUID getSkullOwner(ItemStack item) {
+        NBTTagCompound skullOwner = (NBTTagCompound) getOwnerCompound(item);
+        if (skullOwner == null) {
+            return null;
+        }
+        String id = skullOwner.getString("Id");
+        if (id == null) {
+            return null;
+        }
+        return UUID.fromString(id);
+    }
+
     @Override
     public NBTTagCompound createOwnerCompound(String id, String textureValue) {
         NBTTagCompound skullOwner = new NBTTagCompound();
@@ -72,6 +79,22 @@ class v1_14_R1 implements InternalsProvider {
         textures.add(value);
         properties.set("textures", textures);
         skullOwner.set("Properties", properties);
+        return skullOwner;
+    }
+
+    @Override public Object getOwnerCompound(ItemStack item) {
+        net.minecraft.server.v1_14_R1.ItemStack nmsStack = CraftItemStack.asNMSCopy(item);
+
+        NBTTagCompound tag = nmsStack.getTag();
+        if (tag == null) {
+            return null;
+        }
+
+        NBTTagCompound skullOwner = tag.getCompound("SkullOwner");
+        if (skullOwner == null) {
+            return null;
+        }
+
         return skullOwner;
     }
 
